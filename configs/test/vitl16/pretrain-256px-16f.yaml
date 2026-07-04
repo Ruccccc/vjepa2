@@ -2,7 +2,7 @@ app: vjepa
 nodes: 1
 tasks_per_node: 2
 cpus_per_task: 4
-mem_per_gpu: 220G
+mem_per_gpu: 15G
 folder: /kaggle/working/vjepa2/pretrain/16.8.vitl.256px.16f
 data:
   dataset_type: VideoDataset
