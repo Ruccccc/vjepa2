@@ -2,8 +2,8 @@ app: vjepa
 nodes: 1
 tasks_per_node: 2
 cpus_per_task: 4
-mem_per_gpu: 15G
-folder: /kaggle/working/vjepa2/pretrain/16.8.vitl.256px.16f.extended
+mem_per_gpu: 220G
+folder: /kaggle/working/vjepa2/pretrain/16.8.vith.256px.16f
 data:
   dataset_type: VideoDataset
   datasets:
@@ -14,7 +14,7 @@ data:
   crop_size: 256
   patch_size: 16
   dataset_fpcs:
-  - 8
+  - 16
   tubelet_size: 2
   fps: 4
   num_workers: 4
@@ -61,14 +61,14 @@ mask:
   - 1.0
 meta:
   dtype: bfloat16
-  eval_freq: 200
+  eval_freq: 100
   load_checkpoint: true
   read_checkpoint: null
-  save_every_freq: 200
+  save_every_freq: 50
   seed: 239
   use_sdpa: true
 model:
-  model_name: vit_large
+  model_name: vit_huge
   pred_depth: 12
   pred_embed_dim: 384
   pred_num_heads: 12
@@ -84,7 +84,7 @@ optimization:
   epochs: 1
   final_lr: 0.000525
   final_weight_decay: 0.04
-  ipe: 200
+  ipe: 50
   ipe_scale: 1.25
   lr: 0.000525
   start_lr: 0.0001
