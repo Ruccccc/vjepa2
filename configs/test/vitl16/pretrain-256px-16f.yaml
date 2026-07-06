@@ -10,8 +10,8 @@ data:
   - /kaggle/working/test_dataset.csv
   datasets_weights:
   - 1.0
-  batch_size: 2
-  crop_size: 128
+  batch_size: 24
+  crop_size: 256
   patch_size: 16
   dataset_fpcs:
   - 8
