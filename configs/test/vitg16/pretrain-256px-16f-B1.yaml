@@ -3,14 +3,14 @@ nodes: 1
 tasks_per_node: 2
 cpus_per_task: 4
 mem_per_gpu: 15G
-folder: /kaggle/working/vjepa2/pretrain/16.8.vith.256px.16f
+folder: /kaggle/working/vjepa2/pretrain/16.8.vitg.256px.16f
 data:
   dataset_type: VideoDataset
   datasets:
   - /kaggle/working/test_dataset.csv
   datasets_weights:
   - 1.0
-  batch_size: 16
+  batch_size: 1
   crop_size: 256
   patch_size: 16
   dataset_fpcs:
@@ -68,7 +68,7 @@ meta:
   seed: 239
   use_sdpa: true
 model:
-  model_name: vit_huge
+  model_name: vit_giant_xformers
   pred_depth: 12
   pred_embed_dim: 384
   pred_num_heads: 12
