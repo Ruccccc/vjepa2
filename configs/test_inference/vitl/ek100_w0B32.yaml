@@ -23,7 +23,7 @@ experiment:
     frames_per_clip: 32
     frames_per_second: 8
     motion_shift: false
-    num_workers: 0
+    num_workers: 2
     pin_memory: false
     random_resize_scale:
     - 0.08
@@ -38,7 +38,7 @@ experiment:
     - 1.75
   optimization:
     num_epochs: 20
-    batch_size: 1
+    batch_size: 32
     use_bfloat16: true
     use_focal_loss: true
     multihead_kwargs:
