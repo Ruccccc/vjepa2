@@ -38,7 +38,7 @@ experiment:
     - 1.75
   optimization:
     num_epochs: 20
-    batch_size: 16
+    batch_size: 4
     use_bfloat16: true
     use_focal_loss: true
     multihead_kwargs:
