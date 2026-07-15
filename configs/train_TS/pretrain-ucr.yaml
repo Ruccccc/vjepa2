@@ -1,8 +1,7 @@
-# Stage 1: masked latent prediction pretraining for univariate time series.
 # This config is intended for a single-GPU Kaggle Notebook environment.
 
 app: vjepa_TS
-folder: /kaggle/working/vjepa-TS-stage1
+folder: /kaggle/working/vjepa
 
 meta:
   seed: 239
@@ -17,8 +16,7 @@ meta:
   read_checkpoint: null
 
 data:
-  # Update this path to match the Kaggle Dataset mount name.
-  root_path: /kaggle/input/ucrarchive-2018/UCRArchive_2018
+  root_path: /kaggle/input/datasets/ruckuo/ucr-archive-2018
   file_patterns:
   - "*/*_TRAIN.tsv"
   - "*/*_TEST.tsv"
