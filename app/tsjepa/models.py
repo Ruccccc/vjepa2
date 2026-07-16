@@ -51,7 +51,7 @@ class PatchEmbed1D(nn.Module):
 
 
 class TimeSeriesEncoder(nn.Module):
-    """Transformer encoder for fixed-length univariate time-series crops."""
+    """TSJEPA Transformer encoder for fixed-length univariate time-series crops."""
 
     def __init__(
         self,

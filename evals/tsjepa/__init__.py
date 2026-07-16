@@ -1,0 +1,1 @@
+"""TSJEPA frozen-encoder evaluation."""

@@ -1,0 +1,61 @@
+# TSJEPA frozen-encoder one-step evaluation on UCR Earthquakes.
+# The official TEST split is evaluated only after selecting an encoder control by validation MAE.
+
+eval_name: tsjepa
+folder: /kaggle/working/tsjepa/evaluation/earthquakes
+
+meta:
+  seed: 239
+  head_seed: 1240
+  device: auto
+  dtype: float16
+  use_amp: true
+  deterministic: true
+
+pretrain:
+  # Use the TSJEPA pretrain checkpoint selected by validation loss, not latest.pt.
+  checkpoint_path: /kaggle/working/tsjepa/pretrain/best.pt
+
+data:
+  root_path: /kaggle/input/datasets/ruckuo/ucr-archive-2018
+  train_file: Earthquakes/Earthquakes_TRAIN.tsv
+  test_file: Earthquakes/Earthquakes_TEST.tsv
+  delimiter: "\t"
+  label_column: 0
+  context_length: 32
+  window_stride: 4
+  validation_ratio: 0.2
+  batch_size: 256
+  num_workers: 2
+  evaluation_num_workers: 0
+  pin_mem: true
+  persistent_workers: true
+
+forecast_head:
+  hidden_dim: 128
+  dropout: 0.1
+  norm_eps: 1.0e-6
+
+loss:
+  type: huber
+  delta: 1.0
+
+optimization:
+  epochs: 20
+  start_lr: 1.0e-4
+  lr: 1.0e-3
+  final_lr: 1.0e-6
+  warmup_ratio: 0.05
+  weight_decay: 0.01
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-8
+  grad_clip: 1.0
+
+experiment:
+  # Both controls use the same split, head architecture, and head initialization.
+  # Only the mode with lower validation MAE is evaluated on official TEST.
+  encoder_modes:
+  - random
+  - pretrained

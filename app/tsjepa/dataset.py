@@ -85,7 +85,7 @@ def split_sequences(sequences, validation_ratio, seed):
 
 
 class TimeSeriesCropDataset(Dataset):
-    """Samples fixed-length normalized crops from a list of univariate sequences."""
+    """Sample fixed-length normalized crops for TSJEPA pretrain."""
 
     def __init__(
         self,

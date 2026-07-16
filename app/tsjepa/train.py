@@ -15,9 +15,9 @@ import torch.distributed as dist
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from app.vjepa_TS.dataset import TimeSeriesCropDataset, load_ucr_sequences, split_sequences
-from app.vjepa_TS.masks import MaskCollator1D
-from app.vjepa_TS.models import TimeSeriesEncoder, TimeSeriesMaskPredictor, gather_tokens
+from app.tsjepa.dataset import TimeSeriesCropDataset, load_ucr_sequences, split_sequences
+from app.tsjepa.masks import MaskCollator1D
+from app.tsjepa.models import TimeSeriesEncoder, TimeSeriesMaskPredictor, gather_tokens
 from src.utils.checkpoint_loader import robust_checkpoint_loader
 from src.utils.logging import AverageMeter, CSVLogger, get_logger
 from src.utils.schedulers import CosineWDSchedule, WarmupCosineSchedule
@@ -67,7 +67,7 @@ def _validate_config(args):
     optimization = args["optimization"]
     checkpoint = args["checkpoint"]
     if model["in_chans"] != 1:
-        raise ValueError("Stage 1 TS training accepts univariate input, so model.in_chans must be 1")
+        raise ValueError("TSJEPA pretrain accepts univariate input, so model.in_chans must be 1")
     if data["sequence_length"] % model["patch_size"] != 0:
         raise ValueError("data.sequence_length must be divisible by model.patch_size")
     if data["validation_crop"] not in ("center", "random"):
@@ -427,7 +427,7 @@ def main(args, resume_preempt=False):
     monitoring_config = args.get("monitoring", {})
 
     if dist.is_available() and dist.is_initialized() and dist.get_world_size() != 1:
-        raise RuntimeError("app.vjepa_TS supports the planned single-GPU Kaggle run only")
+        raise RuntimeError("app.tsjepa supports single-GPU TSJEPA pretrain only")
 
     _seed_everything(meta["seed"], meta["deterministic"])
     device = _resolve_device(meta["device"])
@@ -482,7 +482,7 @@ def main(args, resume_preempt=False):
         best_metric = state["best_metric"]
         resumed_train_loss = state["train_loss"]
         resumed_validation_loss = state["validation_loss"]
-        logger.info("Resumed Stage 1 training from %s at epoch %d", load_path, start_epoch)
+        logger.info("Resumed TSJEPA pretrain from %s at epoch %d", load_path, start_epoch)
 
     log_path = folder / "metrics.csv"
     csv_logger = CSVLogger(
@@ -503,7 +503,7 @@ def main(args, resume_preempt=False):
         if parameter.requires_grad
     )
     logger.info(
-        "Stage 1 TS: device=%s train=%d validation=%d tokens=%d trainable_parameters=%d",
+        "TSJEPA pretrain: device=%s train=%d validation=%d tokens=%d trainable_parameters=%d",
         device,
         len(train_dataset),
         len(validation_dataset),
@@ -570,7 +570,7 @@ def main(args, resume_preempt=False):
             _update_ema(encoder, target_encoder, optimization_config["ema"])
 
             global_step += 1
-            loss_meter.update(float(loss), series.size(0))
+            loss_meter.update(loss.detach().item(), series.size(0))
             if iteration % meta["log_freq"] == 0 or iteration == iterations_per_epoch - 1:
                 logger.info(
                     "epoch=%d iteration=%d/%d loss=%.6f lr=%.3e wd=%.3e",

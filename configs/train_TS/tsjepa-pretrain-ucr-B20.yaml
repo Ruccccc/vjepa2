@@ -1,0 +1,121 @@
+# TSJEPA pretrain B20: continue the validated B5 run to a total of twenty epochs.
+
+app: tsjepa
+folder: /kaggle/working/tsjepa/pretrain
+
+meta:
+  seed: 239
+  device: auto
+  dtype: float16
+  use_amp: true
+  deterministic: true
+  log_freq: 10
+  eval_freq: 1
+  save_every_freq: 5
+  load_checkpoint: true
+  # Continue from the best checkpoint produced by B5 in the shared pretrain folder.
+  read_checkpoint: /kaggle/working/tsjepa/pretrain/best.pt
+
+data:
+  root_path: /kaggle/input/datasets/ruckuo/ucr-archive-2018
+  file_patterns:
+  - "*/*_TRAIN.tsv"
+  - "*/*_TEST.tsv"
+  exclude_datasets:
+  - Earthquakes
+  delimiter: "\t"
+  label_column: 0
+
+  # Number of scalar values in each randomly sampled crop.
+  sequence_length: 32
+  train_random_crop: true
+  validation_crop: center
+  crop_attempts: 16
+  normalize: true
+  normalization_eps: 1.0e-6
+  min_std: 1.0e-6
+
+  validation_ratio: 0.05
+  batch_size: 128
+  shuffle_train: true
+  num_workers: 2
+  validation_num_workers: 0
+  pin_mem: true
+  persistent_workers: true
+  train_drop_last: true
+  validation_drop_last: false
+
+model:
+  in_chans: 1
+  patch_size: 4
+  embed_dim: 128
+  depth: 6
+  num_heads: 4
+  mlp_ratio: 4.0
+  qkv_bias: true
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+  drop_path_rate: 0.05
+  norm_eps: 1.0e-6
+  init_std: 0.02
+  activation: gelu
+  wide_silu: true
+  pos_embedding: sincos
+  use_sdpa: true
+  use_activation_checkpointing: false
+
+predictor:
+  embed_dim: 128
+  depth: 3
+  num_heads: 4
+  mlp_ratio: 4.0
+  qkv_bias: true
+  drop_rate: 0.0
+  attn_drop_rate: 0.0
+  drop_path_rate: 0.0
+  norm_eps: 1.0e-6
+  init_std: 0.02
+  activation: gelu
+  wide_silu: true
+  num_mask_tokens: 1
+  zero_init_mask_tokens: true
+  use_sdpa: true
+  use_activation_checkpointing: false
+
+mask:
+  validation_seed: 240
+  interior_probability: 0.6
+  suffix_probability: 0.4
+  ratio: 0.375
+  min_context_tokens: 1
+
+loss:
+  type: l1
+  target_layer_norm: true
+
+optimization:
+  # B20 means twenty total epochs, including the epoch stored in the loaded B5 checkpoint.
+  epochs: 20
+  iterations_per_epoch: null
+  start_lr: 1.0e-5
+  lr: 1.0e-4
+  final_lr: 1.0e-6
+  warmup_ratio: 0.1
+  weight_decay: 0.04
+  final_weight_decay: 0.04
+  ema: 0.9995
+  betas:
+  - 0.9
+  - 0.999
+  eps: 1.0e-8
+  grad_clip: 1.0
+
+checkpoint:
+  latest_name: latest.pt
+  best_name: best.pt
+  monitor: validation_loss
+  mode: min
+
+monitoring:
+  log_embedding_std: true
+  collapse_std_threshold: 0.01

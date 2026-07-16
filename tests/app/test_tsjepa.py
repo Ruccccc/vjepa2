@@ -11,10 +11,10 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 
-from app.vjepa_TS.dataset import TimeSeriesCropDataset, discover_ucr_files, load_ucr_sequences, split_sequences
-from app.vjepa_TS.masks import MaskCollator1D
-from app.vjepa_TS.models import TimeSeriesEncoder, TimeSeriesMaskPredictor, gather_tokens
-from app.vjepa_TS.train import (
+from app.tsjepa.dataset import TimeSeriesCropDataset, discover_ucr_files, load_ucr_sequences, split_sequences
+from app.tsjepa.masks import MaskCollator1D
+from app.tsjepa.models import TimeSeriesEncoder, TimeSeriesMaskPredictor, gather_tokens
+from app.tsjepa.train import (
     _load_checkpoint,
     _make_optimizer,
     _make_schedulers,
@@ -197,7 +197,7 @@ class TestTimeSeriesModels(unittest.TestCase):
                 scaler=None,
                 epoch=2,
                 global_step=7,
-                configuration={"app": "vjepa_TS"},
+                configuration={"app": "tsjepa"},
                 train_loss=0.4,
                 validation_loss=0.5,
                 best_metric=0.5,
@@ -240,10 +240,10 @@ class TestTimeSeriesModels(unittest.TestCase):
                 self.assertTrue(torch.equal(expected, restored))
 
 
-class TestStage1TrainingSmoke(unittest.TestCase):
+class TestTSJEPAPretrainSmoke(unittest.TestCase):
     def _config(self, root, output):
         return {
-            "app": "vjepa_TS",
+            "app": "tsjepa",
             "folder": str(output),
             "meta": {
                 "seed": 5,
